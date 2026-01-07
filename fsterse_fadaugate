@@ -1,0 +1,27 @@
+#!/bin/bash
+
+grep "^-" $1 > vf_typescript_original.txt
+grep "^-" $2 > vf_typescript_modificat.txt
+
+
+echo -e "Fisiere sterse: "
+for fisier in $(awk '{print $9}' "vf_typescript_original.txt") ;
+do
+rezultat=$(grep -w "$fisier" vf_typescript_modificat.txt)
+if [[ ! -n $rezultat ]]; then
+echo -e "$fisier"
+fi
+done
+echo "############################"
+
+######################################
+
+echo -e "Fisiere adaugate:"
+for fisier in $(awk '{print $9}' "vf_typescript_modificat.txt") ;
+do
+rezultat=$(grep -w "$fisier" vf_typescript_original.txt)
+if [[ ! -n $rezultat ]]; then
+echo -e "$fisier"
+fi
+done
+echo "############################"
