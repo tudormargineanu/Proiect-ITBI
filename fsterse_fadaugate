@@ -4,24 +4,79 @@ grep "^-" $1 > vf_typescript_original.txt
 grep "^-" $2 > vf_typescript_modificat.txt
 
 
-echo -e "Fisiere sterse: "
+echo "Fisiere sterse: "
 for fisier in $(awk '{print $9}' "vf_typescript_original.txt") ;
 do
 rezultat=$(grep -w "$fisier" vf_typescript_modificat.txt)
 if [[ ! -n $rezultat ]]; then
-echo -e "$fisier"
+echo "$fisier"
 fi
 done
 echo "############################"
 
 ######################################
 
-echo -e "Fisiere adaugate:"
+echo "Fisiere adaugate:"
 for fisier in $(awk '{print $9}' "vf_typescript_modificat.txt") ;
 do
 rezultat=$(grep -w "$fisier" vf_typescript_original.txt)
 if [[ ! -n $rezultat ]]; then
-echo -e "$fisier"
+echo "$fisier"
 fi
 done
 echo "############################"
+
+################################################################################
+
+echo "Modificatii: "
+echo ""
+######################################
+
+for fisier in $(awk '{print $9}' "vf_typescript_original.txt") ;
+do
+aparitie_fisier=0
+rezultat=$(grep -w "$fisier" vf_typescript_modificat.txt)
+#adauga proprietatile fisierului nou in variabila rezultat
+cuvinte_rezultat=($rezultat)
+#transforma propozitia din rezultat intr un array de cuvinte in cuvinte_rezultat
+
+if [[ -n $rezultat ]]; then    
+#verifica daca exista fisierul; daca variabila rezultat e goala sau nu
+
+original=$(grep -w "$fisier" vf_typescript_original.txt)
+#adauga proprietatile fisierului vechi in variabila original
+
+c=0 #variabila contor pentru fisierul modificat
+for i in $original
+do
+if [[ $i != ${cuvinte_rezultat[$c]} ]]; then
+if [[ $aparitie_fisier == 0 ]]; then
+echo $fisier
+echo ""
+echo -n "modificare "
+aparitie_fisier=1
+fi
+case "$c" in
+0)
+echo  "permisiune din $i in ${cuvinte_rezultat[$c]}" ;;
+1)
+echo  "numar de linkuri din $i in ${cuvinte_rezultat[$c]}" ;;
+2)
+echo  "proprietar fisier din $i in ${cuvinte_rezultat[$c]}" ;;
+3)
+echo  "grup fisierdin $i in ${cuvinte_rezultat[$c]}" ;;
+4)
+echo  "dimensiune fisier din $i in ${cuvinte_rezultat[$c]}" ;;
+S*)
+continue ;;
+esac
+fi
+((c++))
+done
+
+fi
+if [[ $aparitie_fisier == 1 ]]; then
+echo "############################"
+aparitie_fisier=0
+fi
+done
