@@ -80,3 +80,59 @@ echo "############################"
 aparitie_fisier=0
 fi
 done
+
+
+
+> vf_typescript_original.txt
+> vf_typescript_modificat.txt
+vftext=0
+lin=2
+for i in $(awk '{print $3}' typescript_original.txt) ;
+do
+
+if [[ ! "$i" =~ ^[0-9]+$ && $vftext == 1 ]]; then
+break
+fi
+if [[ $vftext == 1 ]]; then
+awk -v n=$lin 'NR==n {print $0}' typescript_original.txt >> vf_typescript_original.txt
+
+fi
+if [ $i = "Used" ]; then
+vftext=1
+fi
+((lin++))
+done
+vftext=0
+lin=2
+for i in $(awk '{print $3}' typescript_modificat.txt) ;
+do
+
+if [[ ! "$i" =~ ^[0-9]+$ && $vftext == 1 ]]; then
+break
+fi
+if [[ $vftext == 1 ]]; then
+awk -v n=$lin 'NR==n {print $0}' typescript_modificat.txt >> vf_typescript_modificat.txt
+
+fi
+if [ $i = "Used" ]; then
+vftext=1
+fi
+((lin++))
+done
+
+
+echo "Spatiu: "
+i=1
+while read -r linie; do
+linie=($linie)
+if [[ ${linie[2]} != $(awk -v n=$i 'NR==n {print $3}' vf_typescript_modificat.txt) ]]; then
+
+echo -n "${linie[0]} si-a schimbat spatiul din ${linie[2]} KB in $(awk -v n=$i 'NR==n {print $3}' vf_typescript_modificat.txt) KB"
+
+echo "si au mai ramas $(awk -v n=$i 'NR==n {print $4}' vf_typescript_modificat.txt) KB in loc de ${linie[3]} KB"
+fi
+
+
+
+((i++))
+done < vf_typescript_original.txt
